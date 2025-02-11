@@ -6,10 +6,10 @@
 # autospec commit: 8b93847
 #
 Name     : zlib-ng
-Version  : 2.2.3
-Release  : 3
-URL      : https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.3.tar.gz
-Source0  : https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.3.tar.gz
+Version  : 2.2.4
+Release  : 4
+URL      : https://github.com/zlib-ng/zlib-ng/archive/2.2.4/zlib-ng-2.2.4.tar.gz
+Source0  : https://github.com/zlib-ng/zlib-ng/archive/2.2.4/zlib-ng-2.2.4.tar.gz
 Summary  : zlib-ng compression library
 Group    : Development/Tools
 License  : Zlib
@@ -60,16 +60,16 @@ license components for the zlib-ng package.
 
 
 %prep
-%setup -q -n zlib-ng-2.2.3
-cd %{_builddir}/zlib-ng-2.2.3
+%setup -q -n zlib-ng-2.2.4
+cd %{_builddir}/zlib-ng-2.2.4
 pushd ..
-cp -a zlib-ng-2.2.3 buildavx2
+cp -a zlib-ng-2.2.4 buildavx2
 popd
 pushd ..
-cp -a zlib-ng-2.2.3 buildavx512
+cp -a zlib-ng-2.2.4 buildavx512
 popd
 pushd ..
-cp -a zlib-ng-2.2.3 buildapx
+cp -a zlib-ng-2.2.4 buildapx
 popd
 
 %build
@@ -77,7 +77,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1739234103
+export SOURCE_DATE_EPOCH=1739286881
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -205,7 +205,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1739234103
+export SOURCE_DATE_EPOCH=1739286881
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/zlib-ng
 cp %{_builddir}/zlib-ng-%{version}/LICENSE.md %{buildroot}/usr/share/package-licenses/zlib-ng/66e52612577c74625a585951e1fd04d95ab27d69 || :
@@ -253,11 +253,11 @@ popd
 
 %files lib
 %defattr(-,root,root,-)
-/V3/usr/lib64/libz-ng.so.2.2.3
-/V4/usr/lib64/libz-ng.so.2.2.3
-/VA/usr/lib64/libz-ng.so.2.2.3
+/V3/usr/lib64/libz-ng.so.2.2.4
+/V4/usr/lib64/libz-ng.so.2.2.4
+/VA/usr/lib64/libz-ng.so.2.2.4
 /usr/lib64/libz-ng.so.2
-/usr/lib64/libz-ng.so.2.2.3
+/usr/lib64/libz-ng.so.2.2.4
 
 %files license
 %defattr(0644,root,root,0755)
