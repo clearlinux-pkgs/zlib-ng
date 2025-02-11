@@ -7,7 +7,7 @@
 #
 Name     : zlib-ng
 Version  : 2.2.3
-Release  : 2
+Release  : 3
 URL      : https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.3.tar.gz
 Source0  : https://github.com/zlib-ng/zlib-ng/archive/refs/tags/2.2.3.tar.gz
 Summary  : zlib-ng compression library
@@ -68,13 +68,16 @@ popd
 pushd ..
 cp -a zlib-ng-2.2.3 buildavx512
 popd
+pushd ..
+cp -a zlib-ng-2.2.3 buildapx
+popd
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1739233138
+export SOURCE_DATE_EPOCH=1739234103
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -147,6 +150,32 @@ FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v4 -mprefer-vector-width=512 
 make  %{?_smp_mflags}
 popd
 popd
+pushd ../buildapx/
+mkdir -p clr-build-apx
+pushd clr-build-apx
+export GCC_IGNORE_WERROR=1
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+CLEAR_INTERMEDIATE_CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_FCFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CLEAR_INTERMEDIATE_CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -O3 -fdebug-types-section -femit-struct-debug-baseonly -ffat-lto-objects -flto=auto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS"
+CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS"
+FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
+FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
+ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
+LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
+GOAMD64=v3
+CFLAGS="$CLEAR_INTERMEDIATE_CFLAGS -march=x86-64-v3 -mapxf -mavx10.1 -Wl,-z,x86-64-v3 "
+CXXFLAGS="$CLEAR_INTERMEDIATE_CXXFLAGS -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS -march=x86-64-v3 -mapxf -mavx10.1 -Wl,-z,x86-64-v3 "
+FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS -march=x86-64-v3 -mapxf -mavx10.1 "
+%cmake ..   -G 'Unix Makefiles'
+make  %{?_smp_mflags}
+popd
+popd
 
 %check
 export LANG=C.UTF-8
@@ -157,6 +186,8 @@ cd clr-build; make test
 cd ../../buildavx2/clr-build-avx2;
 make test || :
 cd ../../buildavx512/clr-build-avx512;
+make test || :
+cd ../../buildapx/clr-build-apx;
 make test || :
 
 %install
@@ -174,7 +205,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1739233138
+export SOURCE_DATE_EPOCH=1739234103
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/zlib-ng
 cp %{_builddir}/zlib-ng-%{version}/LICENSE.md %{buildroot}/usr/share/package-licenses/zlib-ng/66e52612577c74625a585951e1fd04d95ab27d69 || :
@@ -191,12 +222,19 @@ pushd clr-build-avx512
 %make_install_v4  || :
 popd
 popd
+pushd ../buildapx/
+GOAMD64=v3
+pushd clr-build-apx
+%make_install_va  || :
+popd
+popd
 GOAMD64=v2
 pushd clr-build
 %make_install
 popd
 /usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 /usr/bin/elf-move.py avx512 %{buildroot}-v4 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
+/usr/bin/elf-move.py apx %{buildroot}-va %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
@@ -217,6 +255,7 @@ popd
 %defattr(-,root,root,-)
 /V3/usr/lib64/libz-ng.so.2.2.3
 /V4/usr/lib64/libz-ng.so.2.2.3
+/VA/usr/lib64/libz-ng.so.2.2.3
 /usr/lib64/libz-ng.so.2
 /usr/lib64/libz-ng.so.2.2.3
 
